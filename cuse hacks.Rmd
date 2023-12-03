@@ -1,0 +1,524 @@
+---
+
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(gplots)
+library(tidyverse)
+```
+Import Data
+```{r}
+#wd = "D:/ Data Analysis/Bike sharing data"
+#setwd(wd)
+
+bikeHour = read.csv("hour.csv")
+bikeDay = read.csv("day.csv")
+```
+Check the data
+```{r}
+str(bikeHour)
+
+```
+Data Cleaning
+```{r}
+##############################################################################
+##############################  FILTERING ####################################
+##############################################################################
+
+
+
+############################# Hourly Dataset #################################
+
+## Missing Values
+missingHour = sum(is.na(bikeHour)) 
+missingDay  = sum(is.na(bikeDay))
+# there are no missing values
+
+## Outliers - CASUAL----------------------------------------------------------
+Array = bikeHour$casual
+boxplot(Array) # Boxplot
+
+# Probability Distribution Function
+A = mean(Array)  # mean
+B = sd(Array)    # standard deviation
+y = dnorm(Array, A, B)         # PDF
+
+plot(Array,y, main = "PDF")  # PDF of the Array
+
+# Inter Quartile Range
+summary(Array)
+iqr = IQR(Array) # interquartile range
+lb  = quantile(Array, 0.25) - 1.5*iqr  # lower bound
+ub  = quantile(Array, 0.75) + 1.5*iqr  # upper bound
+
+iqr_bikeHourCasual = bikeHour[Array >= lb & Array <= ub,] # data only within IQR
+
+
+## Zero Values
+# could correlate with other conditions ie. weather
+
+zeroes_bikeHourCasual = bikeHour[Array == 0,]
+omitZeroes_bikeHourCasual = bikeHour[Array != 0,]
+
+# IQR of non-zero data
+nonzero = Array[Array != 0]
+iqr_omitZeroes = IQR(nonzero) 
+lb  = quantile(nonzero, 0.25) - 1.5*iqr_omitZeroes  # lower bound
+ub  = quantile(nonzero, 0.75) + 1.5*iqr_omitZeroes  # upper bound
+
+iqr_omitZeroes_bikeHourCasual = omitZeroes_bikeHourCasual[nonzero >= lb & nonzero <= ub,]
+
+## Outliers - Registered ------------------------------------------------------
+Array = bikeHour$registered
+boxplot(Array) # Boxplot
+
+# Probability Distribution Function
+A = mean(Array)  # mean
+B = sd(Array)    # standard deviation
+y = dnorm(Array, A, B)         # PDF
+
+plot(Array,y, main = "PDF")  # PDF of the Array
+
+# Inter Quartile Range
+summary(Array)
+iqr = IQR(Array) # interquartile range
+lb  = quantile(Array, 0.25) - 1.5*iqr  # lower bound
+ub  = quantile(Array, 0.75) + 1.5*iqr  # upper bound
+
+iqr_bikeHourRegistered = bikeHour[Array >= lb & Array <= ub,] # data only within IQR
+
+
+## Zero Values
+# could correlate with other conditions ie. weather
+
+zeroes_bikeHourRegistered = bikeHour[Array == 0,]
+omitZeroes_bikeHourRegistered = bikeHour[Array != 0,]
+
+# IQR of non-zero data
+nonzero = Array[Array != 0]
+iqr_omitZeroes = IQR(nonzero) 
+lb  = quantile(nonzero, 0.25) - 1.5*iqr_omitZeroes  # lower bound
+ub  = quantile(nonzero, 0.75) + 1.5*iqr_omitZeroes  # upper bound
+
+iqr_omitZeroes_bikeHourRegistered = omitZeroes_bikeHourRegistered[nonzero >= lb & nonzero <= ub,]
+
+## Outliers - General----------------------------------------------------------
+
+omitZeroes_bikeHour = bikeHour[bikeHour$casual != 0,]
+omitZeroes_bikeHour = omitZeroes_bikeHour[omitZeroes_bikeHour$registered != 0,]
+
+
+############################# Daily Dataset #################################
+
+
+## Outliers - CASUAL----------------------------------------------------------
+Array = bikeDay$casual
+boxplot(Array) # Boxplot
+
+# Probability Distribution Function
+A = mean(Array)  # mean
+B = sd(Array)    # standard deviation
+y = dnorm(Array, A, B)         # PDF
+
+plot(Array,y, main = "PDF")  # PDF of the Array
+
+# Inter Quartile Range
+summary(Array)
+iqr = IQR(Array) # interquartile range
+lb  = quantile(Array, 0.25) - 1.5*iqr  # lower bound
+ub  = quantile(Array, 0.75) + 1.5*iqr  # upper bound
+
+iqr_bikeDayCasual = bikeDay[Array >= lb & Array <= ub,] # data only within IQR
+
+
+## Zero Values
+# could correlate with other conditions ie. weather
+
+zeroes_bikeDayCasual = bikeDay[Array == 0,]
+omitZeroes_bikeDayCasual = bikeDay[Array != 0,]
+
+# IQR of non-zero data
+nonzero = Array[Array != 0]
+iqr_omitZeroes = IQR(nonzero) 
+lb  = quantile(nonzero, 0.25) - 1.5*iqr_omitZeroes  # lower bound
+ub  = quantile(nonzero, 0.75) + 1.5*iqr_omitZeroes  # upper bound
+
+iqr_omitZeroes_bikeDayCasual = omitZeroes_bikeDayCasual[nonzero >= lb & nonzero <= ub,]
+
+## Outliers - Registered ------------------------------------------------------
+Array = bikeDay$registered
+boxplot(Array) # Boxplot
+
+# Probability Distribution Function
+A = mean(Array)  # mean
+B = sd(Array)    # standard deviation
+y = dnorm(Array, A, B)         # PDF
+
+plot(Array,y, main = "PDF")  # PDF of the Array
+
+# Inter Quartile Range
+summary(Array)
+iqr = IQR(Array) # interquartile range
+lb  = quantile(Array, 0.25) - 1.5*iqr  # lower bound
+ub  = quantile(Array, 0.75) + 1.5*iqr  # upper bound
+
+iqr_bikeDayRegistered = bikeDay[Array >= lb & Array <= ub,] # data only within IQR
+
+
+## Zero Values
+# could correlate with other conditions ie. weather
+
+zeroes_bikeDayRegistered = bikeDay[Array == 0,]
+omitZeroes_bikeDayRegistered = bikeDay[Array != 0,]
+
+# IQR of non-zero data
+nonzero = Array[Array != 0]
+iqr_omitZeroes = IQR(nonzero) 
+lb  = quantile(nonzero, 0.25) - 1.5*iqr_omitZeroes  # lower bound
+ub  = quantile(nonzero, 0.75) + 1.5*iqr_omitZeroes  # upper bound
+
+iqr_omitZeroes_bikeDayRegistered = omitZeroes_bikeDayRegistered[nonzero >= lb & nonzero <= ub,]
+
+## Outliers - General----------------------------------------------------------
+
+omitZeroes_bikeDay = bikeDay[bikeDay$casual != 0,]
+omitZeroes_bikeDay = omitZeroes_bikeDay[omitZeroes_bikeDay$registered != 0,]
+```
+
+Get rid of "instant"
+```{r}
+bikeHour <- bikeHour[,-1]
+bikeDay <- bikeDay[,-1]
+```
+Transform variables into factor and rename levels for
+```{r}
+bikeHour <- bikeHour %>%
+  mutate(across(c(season,yr,mnth,workingday,holiday,weekday,weathersit),as.factor))
+
+bikeHour$season <- recode_factor(bikeHour$season, "1" = "Spring", "2"= "Summer", "3" = "Fall", "4" = "Winter") 
+bikeHour$workingday <- recode_factor(bikeHour$workingday, "1" = "Workday", "0" = "Weekend/Holiday")
+bikeHour$weathersit <- recode_factor(bikeHour$weathersit, "1" = "Clear", "2"= "Mist/Cloudy", "3" = "Light Rain/Snow", "4" = "Heavy Rain/Storm")
+bikeHour$holiday <- recode_factor(bikeHour$holiday, "1" = "Holiday", "0" = "Not Holiday")
+bikeHour$mnth <- recode_factor(bikeHour$mnth, "1" = "January", "2" = "February", "3" = "March", "4" = "April", "5" = "May", "6" = "June", "7" = "July", "8" = "August", "9" = "September", "10" = "October", "11" = "November", "12" = "December")
+str(bikeHour)
+
+
+```
+
+Ration of casual and registered
+```{r}
+bikeHour <- mutate(bikeHour, Ratio = (registered+1)/(casual+1))
+```
+
+Make a new factor variable morning/afternon/evening/night
+mor (1) = 5:00 am to 11:00 am, aft(2) = 11:00 am to 5:00pm, evn(3) = 5:00 pm to 11:00 pm, nig(4) = 11:00pm to 5:00 am
+```{r}
+bikeHour <- mutate(bikeHour, TimeOfDay = case_when(
+    hr %in% c(5,11) ~ "Morning",
+    hr %in% c(12,17) ~ "Afternoon",
+    hr %in% c(18,22) ~ "Evening",
+    TRUE ~ "Night"))
+bikeHour$TimeOfDay <- as.factor(bikeHour$TimeOfDay)
+bikeHour$hr<- as.factor(bikeHour$hr)
+
+```
+view(bikeHour)
+```{r}
+plot_trend_day_hour <- ggplot(bikeHour, aes(x = weekday, y = cnt, fill = hr)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_manual(values = c("red", "blue", "green", "yellow", "violet", "pink", "purple", "black",
+                               "grey", "brown", "cyan", "orange", "beige", "light pink", "gold",
+                               "sienna1", "hotpink2", "aquamarine", "wheat", "plum", "khaki", "azure",
+                               "sky blue", "tan")) +
+  labs(title = "Bike Rent Trend Every Hour",
+       subtitle = "Group by Day",
+       x = "Day Name",
+       y = "Freq",
+       fill = "") +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        legend.title = element_blank())
+
+plot_trend_day_hour
+```
+```{r}
+library(ggplot2)
+
+# Create a grouped or stacked bar chart to compare "casual" and "registered" bike usage
+ggplot(bikeHour, aes(x = mnth)) +
+  geom_bar(aes(y = casual, fill = "blue"), stat = "identity", position = "dodge", width = 0.4) +
+  geom_bar(aes(y = registered, fill = "green"), stat = "identity", position = "dodge", width = 0.4) +
+  scale_fill_manual(values = c("Casual" = "blue", "Registered" = "green")) +
+  labs(
+    title = "Monthly Bike Usage Comparison",
+    x = "Month",
+    y = "Number of Bikes",
+    fill = "Category"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "top")
+```
+```{r}
+#doubt
+library(ggplot2)
+ 
+ggplot(bikeHour, aes(x = mnth)) +
+  geom_line(aes(y = casual), color = "blue", linetype = "solid") +
+  geom_line(aes(y = registered), color = "red", linetype = "dashed") +
+  labs(
+    title = "Plot with One X-Variable and Two Y-Variables",
+    x = "X-Axis Label",
+    y = "Y-Axis Label"
+  ) +
+  theme_minimal()
+```
+
+```{r}
+boxplot(temp ~ season,
+        data = bikeHour,
+        xlab = "season",
+        ylab = "temp",
+        main = "Temperature by Season",
+        col = "blue")
+```
+# create a beanplot for number of bike rents per each weather condition
+#install.packages("beanplot")
+library("beanplot")
+require("beanplot")
+require("RColorBrewer")
+beanplot <- lapply(brewer.pal(6, "Set3"),
+                    function(x){return(c(x, "black", "gray", "red"))})
+beanplot(cnt ~ weathersit,
+         data = bikeHour,
+         main = "Bike Rents by Weather Condition",
+         xlab = "Weather Condition",
+         ylab = "Number of rentals",
+         col = beanplot,
+         lwd = 1,
+         what = c (1,1,1,0),
+         log = ""
+         )
+```{r}
+#weather vs bike rentals 
+library(ggplot2)
+
+# Set the colors for the bars
+colors <- brewer.pal(6, "Set3")
+
+# Create a bar chart
+ggplot(bikeHour, aes(x = weathersit, y = cnt, fill = weathersit)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_manual(values = colors) +
+  labs(
+    title = "Bike Rents by Weather Condition",
+    x = "Weather Condition",
+    y = "Number of Rentals"
+  ) +
+  theme_minimal()
+```
+  
+#casual vs registered
+```{r}
+#install.packages("plotly")
+library(plotly)
+seasonality <- plot_ly()
+
+seasonality <- add_trace(seasonality, x = ~bikeHour$season, y = ~bikeHour$casual, name = 'Casual', 
+                 type = 'scatter', mode = 'lines', line = list(color = 'black', width = 4))
+seasonality<- add_trace(seasonality, x = bikeHour$season, y = bikeHour$registered, name = 'Registered', 
+                 type = 'scatter', mode = 'lines', line = list(color = 'red', width = 4))
+
+seasonality <- layout(seasonality, title = 'Casual vs. Registered rentals per season', xaxis = list(title = 'Season'), 
+              yaxis = list(title = 'Rentals'))
+
+seasonality
+```
+
+```{r}
+# Load the dplyr library
+library(dplyr)
+
+# Convert "season" to a factor if it's not already
+bikeHour$season <- as.factor(bikeHour$season)
+
+# Group by 'season' and sum 'registered' and 'casual' columns
+season_registered_data <- bikeHour %>%
+  group_by(season) %>%
+  summarize(registered = sum(registered))
+
+season_casual_data <- bikeHour %>%
+  group_by(season) %>%
+  summarize(casual = sum(casual))
+
+# Normalize 'registered' and 'casual' values
+season_registered_data <- season_registered_data %>%
+  mutate(registered = registered / sum(registered))
+
+season_casual_data <- season_casual_data %>%
+  mutate(casual = casual / sum(casual))
+
+# Reset the index
+season_registered_data <- season_registered_data %>%
+  ungroup()
+
+season_casual_data <- season_casual_data %>%
+  ungroup()
+```
+
+```{r}
+# Load the plotly library
+library(plotly)
+
+# Assuming you have 'season_casual_data' and 'season_registered_data' data frames
+# Create the plot
+fig <- plot_ly()
+
+fig <- add_trace(fig, data = season_casual_data, x = ~season, y = ~casual, name = 'Casual', type = 'scatter', mode = 'lines', line = list(color = 'red', width = 4))
+fig <- add_trace(fig, data = season_registered_data, x = ~season, y = ~registered, name = 'Registered', type = 'scatter', mode = 'lines', line = list(color = 'black', width = 4))
+
+fig <- layout(fig, title = 'Casual vs. Registered rentals per season', xaxis = list(title = 'Season'), yaxis = list(title = 'Rentals'))
+
+# Show the plot
+fig
+```
+
+
+```{r}
+library(ggplot2)
+
+# Assuming df_casual_avg is your data frame
+# Create a grouped bar plot
+plot_trend_casual <- ggplot(bikeHour, aes(x = season, y = casual, fill = factor(yr))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(
+    title = "Casual rental averages per season and year",
+    x = "Season",
+    y = "Casual Average",
+    fill = "Year"
+  ) +
+  scale_fill_manual(values = c("#88D1CC", "#F6DCAD")) +  # Define colors for the years
+  theme_minimal()
+
+# Show the plot
+print(plot_trend_casual)
+```
+
+```{r}
+# Create a grouped bar plot
+plot_trend_registered <- ggplot(bikeHour, aes(x = season, y = registered, fill = factor(yr))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(
+    title = "registered rental averages per season and year",
+    x = "Season",
+    y = "registered Average",
+    fill = "Year"
+  ) +
+  scale_fill_manual(values = c("#88D1CC", "#F6DCAD")) +  # Define colors for the years
+  theme_minimal()
+
+# Show the plot
+print(plot_trend_registered)
+```
+
+
+```{r}
+t1 <- cor.test(bikeHour$atemp[bikeHour$yr == 1],
+               bikeHour$cnt[bikeHour$yr == 1])
+t1
+t2 <- cor.test(bikeHour$atemp[bikeHour$yr == 0],
+               bikeHour$cnt[bikeHour$yr == 0])
+t2
+```
+library(ggplot2)
+
+# Create a scatter plot with regression lines
+scatter_plot <- ggplot(bikeHour, aes(x = atemp, y = cnt, color = factor(yr))) +
+  geom_point(size = 3) +
+  geom_smooth(method = 'lm', se = FALSE, size = 1, linetype = 'solid') +  # Add regression lines
+  labs(
+    title = "Temperature vs. Count with Regression Lines",
+    x = "Temperature",
+    y = "Number of Rents",
+    color = "Year"
+  ) +
+  scale_color_manual(values = c("0" = "red", "1" = "black")) +  # Define colors for the years
+  theme_minimal()
+
+# Show the scatter plot with regression lines
+print(scatter_plot)
+
+```{r}
+#install.packages("gridExtra")
+library(gridExtra)
+# Load the required library
+library(ggplot2)
+
+# Create a vector for histogram titles
+vec <- c("Clear Weather", "Cloudy Weather", "Rainy Weather", "Thunderstorm Weather")
+
+# Create a list to store the plots
+plot_list <- list()
+
+# Create histograms with median and mean lines for each weather condition
+for (i in 1:4) {
+  name_i <- vec[i]
+  data_subset <- subset(bikeHour, weathersit == i)
+  
+  # Create a histogram
+  histogram <- ggplot(data_subset, aes(x = cnt)) +
+    geom_histogram(binwidth = 20, fill = "yellow3", color = "black") +
+    labs(
+      title = name_i,
+      x = "Number of Rents",
+      y = "Frequency"
+    ) +
+    geom_vline(aes(xintercept = median(cnt)),
+               color = "black",
+               linetype = "dashed",
+               size = 1) +
+    geom_vline(aes(xintercept = mean(cnt)),
+               color = "blue",
+               linetype = "dashed",
+               size = 1)
+  
+  plot_list[[i]] <- histogram
+}
+
+# Combine the histograms in a 2x2 grid
+grid.arrange(grobs = plot_list, ncol = 2)
+
+# Reset the layout
+dev.off()
+histogram
+```
+```{r}
+beanplot(cnt ~ holiday,
+         data = bikeHour,
+         main = "Bike Rents by Type of a Day",
+         xlab = "Type of Day",
+         ylab = "Number of rents",
+         col = beanplot,
+         lwd = 1,
+         what = c(1,1,1,0),
+         log = ""
+         )
+```
+```{r}
+library(ggplot2)
+
+# Create a bar graph
+bar_graph <- ggplot(bikeHour, aes(x = factor(holiday))) +
+  geom_bar(fill = "blue") +
+  labs(
+    title = "Bike Rents by Type of a Day",
+    x = "Type of Day",
+    y = "Number of rents"
+  ) +
+  theme_minimal()
+
+# Show the bar graph
+print(bar_graph)
+```
+
